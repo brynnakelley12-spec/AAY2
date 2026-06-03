@@ -1,5 +1,5 @@
 const CACHE = 'all-about-you-2-v1';
-const ASSETS = ['/AllAboutYou2/', '/AllAboutYou2/index.html'];
+const ASSETS = ['/AAY2/', '/AAY2/index.html'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
