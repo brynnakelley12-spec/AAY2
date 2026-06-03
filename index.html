@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>All About You</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="All About You">
+<meta name="theme-color" content="#ffffff">
+<link rel="manifest" href="manifest2.json">
+<link rel="apple-touch-icon" href="icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&family=Righteous&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --r: #0EA5E9; --o: #06B6D4; --y: #10B981; --g: #6366F1;
+    --b: #8B5CF6; --i: #A855F7; --v: #3B82F6;
+    --bg: #FFFFFF; --surface: #F5F5F5; --surface2: #EBEBEB;
+    --text: #1C1917; --text-soft: rgba(28,25,23,0.6); --text-muted: rgba(28,25,23,0.35);
+    --border: rgba(28,25,23,0.1); --radius: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  .rainbow { background: linear-gradient(90deg, var(--r), var(--o), var(--y), var(--g), var(--b), var(--i), var(--v)); }
+  .rainbow-text { background: linear-gradient(90deg, var(--r), var(--o), var(--y), var(--g), var(--b), var(--i), var(--v)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+  /* NAV */
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; height: 60px; background: var(--bg); position: sticky; top: 0; z-index: 10; border-bottom: 1px solid var(--border); }
+  .nav-logo { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; letter-spacing: -0.5px; cursor: pointer; }
+  .nav-right { display: flex; align-items: center; gap: 10px; }
+  .nav-btn { display: flex; align-items: center; gap: 7px; padding: 8px 18px; border-radius: 100px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: border-color 0.15s; }
+  .nav-btn:hover { border-color: rgba(28,25,23,0.3); }
+  .nav-btn img { width: 18px; height: 18px; border-radius: 50%; }
+  .rainbow-bar { height: 3px; }
+  .back-btn { display: flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 100px; border: 1px solid var(--border); background: var(--surface); color: var(--text-soft); font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer; }
+  .back-btn:hover { border-color: rgba(28,25,23,0.3); color: var(--text); }
+
+  /* HERO */
+  .hero { text-align: center; padding: 5rem 2rem 4rem; max-width: 700px; margin: 0 auto; }
+  .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(42px,7vw,72px); font-weight: 800; line-height: 1.0; letter-spacing: -2px; margin-bottom: 1.25rem; }
+  .hero p { font-size: 17px; color: var(--text-soft); line-height: 1.7; margin-bottom: 2.5rem; max-width: 480px; margin-left: auto; margin-right: auto; }
+  .hero-cta { display: inline-flex; align-items: center; gap: 10px; padding: 16px 32px; border-radius: 100px; font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 500; cursor: pointer; border: none; color: #000; position: relative; overflow: hidden; transition: transform 0.15s, box-shadow 0.15s; }
+  .hero-cta::before { content:''; position:absolute; inset:0; background: linear-gradient(90deg, var(--r), var(--o), var(--y), var(--g), var(--b), var(--i), var(--v)); z-index:0; }
+  .hero-cta span, .hero-cta svg { position: relative; z-index: 1; }
+  .hero-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.12); }
+
+  /* VIEWS */
+  #view-landing, #view-home, #view-friend { display: none; }
+
+  /* MAIN */
+  .main { max-width: 980px; margin: 0 auto; padding: 2rem; }
+  .toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .search-wrap { flex: 1; min-width: 200px; display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 100px; padding: 10px 16px; }
+  .search-wrap input { border: none; outline: none; background: none; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); width: 100%; }
+  .search-wrap input::placeholder { color: var(--text-muted); }
+  .tb-btn { display: flex; align-items: center; gap: 7px; padding: 10px 20px; border-radius: 100px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; border: none; cursor: pointer; transition: transform 0.1s; color: #000; position: relative; overflow: hidden; white-space: nowrap; }
+  .tb-btn::before { content:''; position:absolute; inset:0; z-index:0; }
+  .tb-btn span, .tb-btn svg { position: relative; z-index: 1; }
+  .tb-btn:hover { transform: translateY(-1px); }
+  .tb-btn-rainbow::before { background: linear-gradient(90deg, var(--r), var(--o), var(--y), var(--g), var(--b), var(--i), var(--v)); }
+  .tb-btn-outline { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+  .tb-btn-outline::before { display: none; }
+  .tb-btn-outline:hover { border-color: rgba(28,25,23,0.3); transform: none; }
+
+  /* FRIEND GRID */
+  .friends-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 14px; }
+  .friend-card { background: var(--surface); border-radius: var(--radius); padding: 1.25rem; cursor: pointer; transition: box-shadow 0.15s, transform 0.1s; animation: fadeUp 0.3s ease forwards; position: relative; overflow: hidden; border: 1px solid var(--border); }
+  .friend-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background: linear-gradient(90deg, var(--r), var(--o), var(--y), var(--g), var(--b), var(--i), var(--v)); }
+  .friend-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.1); transform: translateY(-2px); }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+  .card-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; margin-bottom: 4px; }
+  .card-meta { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+  .card-cats { display: flex; flex-wrap: wrap; gap: 4px; }
+  .card-cat-pill { font-size: 11px; padding: 2px 9px; border-radius: 100px; font-weight: 500; color: #000; }
+
+  /* FRIEND PAGE */
+  .friend-page { max-width: 980px; margin: 0 auto; padding: 2rem; }
+  .friend-page-header { margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+  .friend-page-name { font-family: 'Righteous', sans-serif; font-size: clamp(48px,7vw,72px); font-weight: 400; letter-spacing: -1px; }
+  .friend-page-actions { display: flex; justify-content: flex-end; margin-top: 1rem; }
+  .cats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 14px; }
+  .cat-section { background: var(--surface); border-radius: var(--radius); padding: 1.25rem; border: 1px solid var(--border); position: relative; overflow: hidden; }
+  .cat-section::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+  .cat-section h3 { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .cat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .entry-list { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; min-height: 24px; }
+  .entry-tag { display: flex; align-items: center; gap: 5px; font-size: 13px; padding: 4px 10px 4px 12px; border-radius: 100px; border: 1px solid var(--border); color: var(--text-soft); background: var(--bg); }
+  .entry-tag button { background: none; border: none; cursor: pointer; padding: 0; font-size: 15px; line-height: 1; opacity: 0.35; color: var(--text); }
+  .entry-tag button:hover { opacity: 1; }
+  .add-entry { display: flex; gap: 6px; }
+  .add-entry input { flex: 1; min-width: 0; padding: 7px 12px; border-radius: 100px; border: 1px solid var(--border); background: var(--bg); font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text); outline: none; }
+  .add-entry input:focus { border-color: rgba(28,25,23,0.3); }
+  .add-entry button { padding: 7px 14px; border-radius: 100px; border: none; font-size: 13px; font-family: 'DM Sans', sans-serif; cursor: pointer; font-weight: 500; color: #000; position: relative; overflow: hidden; white-space: nowrap; }
+  .add-entry button::before { content:''; position:absolute; inset:0; background: linear-gradient(90deg, var(--r), var(--o), var(--y), var(--g), var(--b), var(--i), var(--v)); z-index:0; }
+  .add-entry button span { position: relative; z-index: 1; }
+  .no-cats-msg { color: var(--text-muted); font-size: 14px; padding: 1rem 0; }
+
+  /* MODALS */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 100; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; width: 90%; max-width: 420px; animation: fadeUp 0.2s ease; max-height: 90vh; overflow-y: auto; position: relative; }
+  .modal::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius: var(--radius) var(--radius) 0 0; background: linear-gradient(90deg, var(--r), var(--o), var(--y), var(--g), var(--b), var(--i), var(--v)); }
+  .modal h2 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 1.25rem; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+  .field input { width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); outline: none; }
+  .field input:focus { border-color: rgba(28,25,23,0.3); }
+  .modal-actions { display: flex; gap: 10px; margin-top: 1.5rem; }
+  .modal-actions button { flex: 1; padding: 11px; border-radius: 100px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; }
+  .btn-primary { border: none; color: #000; position: relative; overflow: hidden; }
+  .btn-primary::before { content:''; position:absolute; inset:0; background: linear-gradient(90deg, var(--r), var(--o), var(--y), var(--g), var(--b), var(--i), var(--v)); z-index:0; }
+  .btn-primary span { position: relative; z-index: 1; }
+  .btn-secondary { background: var(--surface); color: var(--text-soft); border: 1px solid var(--border); }
+  .btn-secondary:hover { color: var(--text); }
+  .cat-manager-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1rem; max-height: 320px; overflow-y: auto; }
+  .cat-manager-item { display: flex; align-items: center; justify-content: space-between; padding: 9px 14px; background: var(--surface); border-radius: 8px; font-size: 14px; border: 1px solid var(--border); }
+  .cat-manager-item button { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 18px; padding: 0 4px; line-height: 1; }
+  .cat-manager-item button:hover { color: var(--r); }
+  .cat-add-row { display: flex; gap: 8px; }
+  .cat-add-row input { flex: 1; padding: 9px 14px; border-radius: 100px; border: 1px solid var(--border); background: var(--surface); font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); outline: none; }
+  .cat-add-row input:focus { border-color: rgba(28,25,23,0.3); }
+  .cat-add-row button { padding: 9px 18px; border-radius: 100px; border: none; color: #000; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; position: relative; overflow: hidden; }
+  .cat-add-row button::before { content:''; position:absolute; inset:0; background: linear-gradient(90deg, var(--r), var(--o), var(--y), var(--g), var(--b), var(--i), var(--v)); z-index:0; }
+  .cat-add-row button span { position: relative; z-index: 1; }
+  .delete-btn { background: none; border: 1px solid var(--border); border-radius: 100px; padding: 7px 16px; font-size: 13px; color: var(--text-muted); cursor: pointer; font-family: 'DM Sans', sans-serif; }
+  .delete-btn:hover { color: var(--r); border-color: var(--r); }
+  .empty-state { text-align: center; padding: 4rem 2rem; color: var(--text-muted); grid-column: 1/-1; }
+  .empty-state svg { width: 48px; height: 48px; margin: 0 auto 1rem; display: block; opacity: 0.2; }
+  .loading { text-align: center; padding: 4rem; color: var(--text-muted); font-size: 15px; }
+  .empty-cats { font-size: 14px; color: var(--text-muted); padding: 1rem 0; }
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); color: #000; padding: 10px 22px; border-radius: 100px; font-size: 13px; font-weight: 500; z-index: 200; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; }
+  .toast::before { content:''; position:absolute; inset:0; border-radius:100px; background: linear-gradient(90deg, var(--r), var(--o), var(--y), var(--g), var(--b), var(--i), var(--v)); z-index:-1; }
+  .toast.show { opacity: 1; }
+  .av-0{background:var(--r)} .av-1{background:var(--o)} .av-2{background:var(--y)} .av-3{background:var(--g)} .av-4{background:var(--b)} .av-5{background:var(--i)} .av-6{background:var(--v)}
+  .pc-0{background:var(--r)} .pc-1{background:var(--o)} .pc-2{background:var(--y)} .pc-3{background:var(--g)} .pc-4{background:var(--b)} .pc-5{background:var(--i)} .pc-6{background:var(--v)}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo" onclick="goHome()"><span class="rainbow-text">all about you</span></div>
+  <div class="nav-right">
+    <div id="nav-back-wrap" style="display:none">
+      <button class="back-btn" onclick="goHome()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back
+      </button>
+    </div>
+    <button id="auth-btn" class="nav-btn">Sign in with Google</button>
+  </div>
+</nav>
+<div class="rainbow-bar rainbow"></div>
+
+<!-- LANDING -->
+<div id="view-landing">
+  <div class="hero">
+    <h1><span class="rainbow-text">It's All About You</span></h1>
+    <p>A shared space where we can share our likes, dislikes, and other things friends want to know.</p>
+    <button class="hero-cta" onclick="signIn()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M13 12H3"/></svg>
+      <span>Sign in to get started</span>
+    </button>
+    <p style="font-size:13px;color:rgba(28,25,23,0.4);margin-top:1.5rem;margin-bottom:0">
+      📱 Use as an app — tap Share then "Add to Home Screen" on iPhone, or the menu then "Add to Home Screen" on Android
+    </p>
+
+  </div>
+</div>
+
+<!-- HOME (friend grid) -->
+<div id="view-home">
+  <div class="main">
+    <div class="toolbar">
+      <div class="search-wrap">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input id="search" type="text" placeholder="Search friends or entries…" oninput="renderCards()">
+      </div>
+      <button class="tb-btn tb-btn-outline" onclick="openCatModal()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        <span>Manage categories</span>
+      </button>
+      <button class="tb-btn tb-btn-rainbow" onclick="openFriendModal()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        <span>Add friend</span>
+      </button>
+    </div>
+    <div id="friends-grid" class="friends-grid"><div class="loading">Loading…</div></div>
+  </div>
+</div>
+
+<!-- FRIEND PAGE -->
+<div id="view-friend">
+  <div class="friend-page">
+    <div class="friend-page-header">
+      <div id="fp-name" class="friend-page-name"></div>
+      <div id="fp-claim" style="margin-top:0.75rem"></div>
+    </div>
+    <div id="fp-cats" class="cats-grid"></div>
+    <div id="fp-footer" style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end">
+      <button class="delete-btn" id="fp-delete-btn">Remove friend</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD FRIEND MODAL -->
+<div class="modal-overlay" id="friend-modal">
+  <div class="modal">
+    <h2>Add a friend</h2>
+    <div class="field"><label>Name</label><input id="m-name" type="text" placeholder="e.g. Jamie Lee"></div>
+    <div class="field"><label>Note (optional)</label><input id="m-note" type="text" placeholder="e.g. college friend, sister…"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeFriendModal()">Cancel</button>
+      <button class="btn-primary" onclick="addFriend()"><span>Add friend</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- MANAGE CATEGORIES MODAL -->
+<div class="modal-overlay" id="cat-modal">
+  <div class="modal">
+    <h2>Manage categories</h2>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:1rem;line-height:1.6">Categories appear on every friend's page. Add as many as you like.</p>
+    <div class="cat-manager-list" id="cat-manager-list"></div>
+    <div class="cat-add-row">
+      <input id="new-cat-input" type="text" placeholder="New category name…" onkeydown="if(event.key==='Enter')addCategory()">
+      <button onclick="addCategory()"><span>Add</span></button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-primary" onclick="closeCatModal()"><span>Done</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span id="toast-text"></span></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, doc, onSnapshot, addDoc, updateDoc, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBJdjIBAexSg4azwEYwtHSh2zVYK2i9MfQ",
+  authDomain: "all-about-you-2.firebaseapp.com",
+  projectId: "all-about-you-2",
+  storageBucket: "all-about-you-2.firebasestorage.app",
+  messagingSenderId: "73570586310",
+  appId: "1:73570586310:web:4315193eb9f399307211c7"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let friends = [], categories = [], currentFriendId = null;
+let unsubFriends = null, unsubCats = null;
+const AVCOLORS = ['av-0','av-1','av-2','av-3','av-4','av-5','av-6'];
+const PILLCOLORS = ['pc-0','pc-1','pc-2','pc-3','pc-4','pc-5','pc-6'];
+const DOTCOLORS = ['#0EA5E9','#06B6D4','#10B981','#6366F1','#8B5CF6','#A855F7','#3B82F6'];
+
+// VIEWS
+function showView(name) {
+  ['landing','home','friend'].forEach(v => document.getElementById('view-'+v).style.display = 'none');
+  document.getElementById('view-'+name).style.display = 'block';
+  document.getElementById('nav-back-wrap').style.display = name === 'friend' ? 'block' : 'none';
+}
+
+window.goHome = () => { currentFriendId = null; showView('home'); renderCards(); };
+
+// AUTH
+window.signIn = async () => {
+  try { await signInWithPopup(auth, new GoogleAuthProvider()); }
+  catch(e) { showToast('Sign in failed. Please try again.'); }
+};
+window.signOut2 = async () => {
+  if(unsubFriends) unsubFriends();
+  if(unsubCats) unsubCats();
+  await signOut(auth);
+};
+
+onAuthStateChanged(auth, user => {
+  if(user) {
+    document.getElementById('auth-btn').innerHTML = `<img src="${user.photoURL||''}" onerror="this.style.display='none'"> Sign out`;
+    document.getElementById('auth-btn').onclick = window.signOut2;
+    showView('home');
+    startListening();
+  } else {
+    showView('landing');
+    document.getElementById('auth-btn').innerHTML = 'Sign in with Google';
+    document.getElementById('auth-btn').onclick = window.signIn;
+    friends = []; categories = [];
+  }
+});
+
+function startListening() {
+  unsubCats = onSnapshot(doc(db,'config','categories'), snap => {
+    categories = snap.exists() ? (snap.data().list||[]) : [];
+    renderCatManagerList();
+    if(currentFriendId) { const f=friends.find(x=>x.id===currentFriendId); if(f) renderFriendPage(f); }
+  });
+  unsubFriends = onSnapshot(collection(db,'friends'), snap => {
+    friends = snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderCards();
+    if(currentFriendId) { const f=friends.find(x=>x.id===currentFriendId); if(f) renderFriendPage(f); else goHome(); }
+  });
+}
+
+// CATEGORIES
+async function saveCategories() { await setDoc(doc(db,'config','categories'),{list:categories}); }
+window.addCategory = async () => {
+  const inp = document.getElementById('new-cat-input');
+  const val = inp.value.trim();
+  if(!val) return;
+  if(categories.includes(val)) { showToast('Already exists!'); return; }
+  categories.push(val);
+  await saveCategories();
+  inp.value='';
+  showToast(`"${val}" added!`);
+};
+window.removeCategory = async (idx) => {
+  if(!confirm(`Remove "${categories[idx]}"?`)) return;
+  categories.splice(idx,1);
+  await saveCategories();
+};
+function renderCatManagerList() {
+  const list = document.getElementById('cat-manager-list');
+  if(!categories.length) { list.innerHTML='<div class="empty-cats">No categories yet!</div>'; return; }
+  list.innerHTML = categories.map((c,i)=>`
+    <div class="cat-manager-item">
+      <span style="display:flex;align-items:center;gap:8px">
+        <span style="width:10px;height:10px;border-radius:50%;flex-shrink:0;background:${DOTCOLORS[i%DOTCOLORS.length]}"></span>${c}
+      </span>
+      <button onclick="removeCategory(${i})" aria-label="Remove">×</button>
+    </div>`).join('');
+}
+
+// FRIENDS
+window.addFriend = async () => {
+  const name = document.getElementById('m-name').value.trim();
+  if(!name) { showToast('Please enter a name.'); return; }
+  const note = document.getElementById('m-note').value.trim();
+  const avatar = AVCOLORS[Math.floor(Math.random()*AVCOLORS.length)];
+  await addDoc(collection(db,'friends'),{name,note,avatar,entries:{}});
+  closeFriendModal();
+  showToast(`${name} added!`);
+};
+
+window.addEntry = async (friendId, catIdx) => {
+  const category = categories[catIdx];
+  if(!category) return;
+  const inp = document.getElementById(`inp-${friendId}-${catIdx}`);
+  if(!inp) return;
+  const val = inp.value.trim();
+  if(!val) return;
+  const f = friends.find(x=>x.id===friendId);
+  if(!f) return;
+  const entries = {...(f.entries||{})};
+  entries[category] = [...(entries[category]||[])];
+  if(!entries[category].includes(val)) entries[category].push(val);
+  await updateDoc(doc(db,'friends',friendId),{entries});
+  inp.value='';
+};
+
+window.removeEntry = async (friendId, catIdx, idx) => {
+  const category = categories[catIdx];
+  if(!category) return;
+  const f = friends.find(x=>x.id===friendId);
+  if(!f) return;
+  const entries = {...(f.entries||{})};
+  entries[category] = [...(entries[category]||[])];
+  entries[category].splice(idx,1);
+  await updateDoc(doc(db,'friends',friendId),{entries});
+};
+
+window.deleteFriend = async (id) => {
+  if(!confirm('Remove this friend?')) return;
+  await deleteDoc(doc(db,'friends',id));
+  goHome();
+  showToast('Friend removed.');
+};
+
+window.claimPage = async (id) => {
+  const user = auth.currentUser;
+  if(!user) return;
+  const f = friends.find(x=>x.id===id);
+  if(!f || f.ownerUid) return;
+  if(!confirm(`Claim this page as yours? Your Google account will be linked to ${f.name}.`)) return;
+  await updateDoc(doc(db,'friends',id), { ownerUid: user.uid });
+  showToast('Page claimed!');
+};
+
+// RENDER HOME
+window.renderCards = () => {
+  const q = document.getElementById('search').value.toLowerCase();
+  const grid = document.getElementById('friends-grid');
+  const filtered = friends.filter(f => {
+    if(!q) return true;
+    if(f.name.toLowerCase().includes(q)) return true;
+    return Object.values(f.entries||{}).some(arr=>arr.some(e=>e.toLowerCase().includes(q)));
+  }).sort((a,b) => a.name.localeCompare(b.name));
+  if(!filtered.length) {
+    grid.innerHTML=`<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><p>${friends.length===0?'No friends yet.<br>Add someone to get started!':'No matches found.'}</p></div>`;
+    return;
+  }
+  grid.innerHTML = filtered.map(f => {
+    const entries = f.entries||{};
+    const total = Object.values(entries).reduce((s,a)=>s+a.length,0);
+    const filledCats = categories.filter(c=>(entries[c]||[]).length>0).slice(0,3);
+    const pills = filledCats.map(c=>`<span class="card-cat-pill" style="background:${DOTCOLORS[categories.indexOf(c)%DOTCOLORS.length]}">${c}</span>`).join('');
+    return `<div class="friend-card" onclick="openFriendPage('${f.id}')">
+      <div class="card-name">${f.name}</div>
+      <div class="card-meta">${f.note||'Friend'} · ${total} entries</div>
+      <div class="card-cats">${pills}</div>
+    </div>`;
+  }).join('');
+};
+
+// FRIEND PAGE
+window.openFriendPage = (id) => {
+  currentFriendId = id;
+  const f = friends.find(x=>x.id===id);
+  if(f) { renderFriendPage(f); showView('friend'); }
+};
+
+function renderFriendPage(f) {
+  const user = auth.currentUser;
+  const isOwner = user && f.ownerUid === user.uid;
+  const unclaimed = !f.ownerUid;
+
+  document.getElementById('fp-name').innerHTML = `<span class="rainbow-text">${f.name}</span>`;
+  document.getElementById('fp-delete-btn').onclick = () => deleteFriend(f.id);
+
+  // Claim banner
+  const claimEl = document.getElementById('fp-claim');
+  if(unclaimed) {
+    claimEl.innerHTML = `<button onclick="claimPage('${f.id}')" style="display:inline-flex;align-items:center;gap:7px;padding:8px 18px;border-radius:100px;border:1.5px dashed rgba(28,25,23,0.2);background:none;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text-soft);cursor:pointer">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      This is my page
+    </button>`;
+  } else if(isOwner) {
+    claimEl.innerHTML = `<span style="font-size:13px;color:var(--text-muted);display:flex;align-items:center;gap:5px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>This is your page</span>`;
+  } else {
+    claimEl.innerHTML = `<span style="font-size:13px;color:var(--text-muted)">This page belongs to someone else</span>`;
+  }
+
+  const entries = f.entries||{};
+  const fp = document.getElementById('fp-cats');
+
+  if(!categories.length) {
+    fp.innerHTML = '<p class="no-cats-msg">No categories yet. Click <strong>Manage categories</strong> to add some.</p>';
+    return;
+  }
+
+  fp.innerHTML = categories.map((cat,ci) => {
+    const inputId = `inp-${f.id}-${ci}`;
+    const items = entries[cat]||[];
+    const dotColor = DOTCOLORS[ci%DOTCOLORS.length];
+    const removeBtns = isOwner;
+    const tags = items.map((e,i)=>`<span class="entry-tag">${e}${removeBtns?`<button onclick="removeEntry('${f.id}',${ci},${i})" aria-label="Remove">×</button>`:''}</span>`).join('');
+    const addRow = isOwner ? `<div class="add-entry">
+        <input id="${inputId}" type="text" placeholder="Add…" onkeydown="if(event.key==='Enter')addEntry('${f.id}',${ci})">
+        <button onclick="addEntry('${f.id}',${ci})"><span>Add</span></button>
+      </div>` : '';
+    return `<div class="cat-section">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${dotColor}"></div>
+      <h3><span class="cat-dot" style="background:${dotColor}"></span>${cat}</h3>
+      <div class="entry-list">${tags||'<span style="font-size:12px;color:var(--text-muted)">Empty</span>'}</div>
+      ${addRow}
+    </div>`;
+  }).join('');
+
+  // Hide delete button for non-owners
+  document.getElementById('fp-footer').style.display = isOwner ? 'flex' : 'none';
+}
+
+// MODALS
+window.openFriendModal = () => { document.getElementById('friend-modal').classList.add('open'); document.getElementById('m-name').focus(); };
+window.closeFriendModal = () => { document.getElementById('friend-modal').classList.remove('open'); document.getElementById('m-name').value=''; document.getElementById('m-note').value=''; };
+window.openCatModal = () => { document.getElementById('cat-modal').classList.add('open'); renderCatManagerList(); setTimeout(()=>document.getElementById('new-cat-input').focus(),100); };
+window.closeCatModal = () => { document.getElementById('cat-modal').classList.remove('open'); };
+document.getElementById('friend-modal').addEventListener('click',e=>{if(e.target===document.getElementById('friend-modal'))closeFriendModal();});
+document.getElementById('cat-modal').addEventListener('click',e=>{if(e.target===document.getElementById('cat-modal'))closeCatModal();});
+
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  document.getElementById('toast-text').textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+</script>
+<script>
+if('serviceWorker' in navigator) {
+  window.addEventListener('load', () => { navigator.serviceWorker.register('/AllAboutYou2/sw.js'); });
+}
+</script>
+</body>
+</html>
