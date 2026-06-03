@@ -2,7 +2,7 @@
   "name": "All About You",
   "short_name": "All About You",
   "description": "A shared space where we can share our likes, dislikes, and other things friends want to know.",
-  "start_url": "/AllAboutYou2/",
+  "start_url": "/AAY2/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
