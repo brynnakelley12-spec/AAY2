@@ -463,13 +463,34 @@ window.renderCards = () => {
     grid.innerHTML=`<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><p>${friends.length===0?'No friends yet.<br>Add someone to get started!':'No matches found.'}</p></div>`;
     return;
   }
+  const today = new Date();
+  const todayMonth = today.getMonth() + 1;
+  const todayDay = today.getDate();
+
+  function isBirthdayToday(entries) {
+    const bdays = (entries && entries['Birthday']) || [];
+    const months = ['january','february','march','april','may','june','july','august','september','october','november','december'];
+    return bdays.some(b => {
+      const slashMatch = b.match(/^(\d{1,2})[\/\-](\d{1,2})/);
+      const wordMatch = b.match(/([a-zA-Z]+)\s+(\d{1,2})/);
+      let month = null, day = null;
+      if(slashMatch) { month = parseInt(slashMatch[1]); day = parseInt(slashMatch[2]); }
+      else if(wordMatch) { month = months.indexOf(wordMatch[1].toLowerCase()) + 1; day = parseInt(wordMatch[2]); }
+      return month === todayMonth && day === todayDay;
+    });
+  }
+
   grid.innerHTML = filtered.map(f => {
     const entries = f.entries||{};
     const total = Object.values(entries).reduce((s,a)=>s+a.length,0);
     const filledCats = categories.filter(c=>(entries[c]||[]).length>0).slice(0,3);
     const pills = filledCats.map(c=>`<span class="card-cat-pill" style="background:${DOTCOLORS[categories.indexOf(c)%DOTCOLORS.length]}">${c}</span>`).join('');
+    const bday = isBirthdayToday(entries);
     return `<div class="friend-card" onclick="openFriendPage('${f.id}', this.dataset.q)" data-q="${(q||'').replace(/"/g,'&quot;')}">
-      <div class="card-name" style="font-family:'Righteous',sans-serif;background:linear-gradient(90deg,#E63946,#F4A261,#E9C46A,#E76F51,#A8282A,#C1440E,#F4D03F);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${f.name}</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="card-name" style="font-family:'Righteous',sans-serif;background:linear-gradient(90deg,#E63946,#F4A261,#E9C46A,#E76F51,#A8282A,#C1440E,#F4D03F);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${f.name}</div>
+        ${bday ? '<span style="font-size:20px">🎂</span>' : ''}
+      </div>
       ${f.note ? `<div class="card-meta" style="margin-top:4px">${f.note}</div>` : ''}
     </div>`;
   }).join('');
