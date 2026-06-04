@@ -430,7 +430,8 @@ window.openFriendPage = (id, searchTerm) => {
 function renderFriendPage(f, searchTerm) {
   const user = auth.currentUser;
   const isAdmin = user && user.email === 'brynnakelley12@gmail.com';
-  const isOwner = user && (f.ownerUid === user.uid || isAdmin);
+  const isOwner = user && f.ownerUid === user.uid;
+  const canDelete = isOwner || isAdmin;
   const unclaimed = !f.ownerUid;
 
   document.getElementById('fp-name').innerHTML = `<span class="rainbow-text">${f.name}</span>`;
@@ -481,7 +482,7 @@ function renderFriendPage(f, searchTerm) {
   }).join('');
 
   // Hide delete button for non-owners
-  document.getElementById('fp-footer').style.display = isOwner ? 'flex' : 'none';
+  document.getElementById('fp-footer').style.display = canDelete ? 'flex' : 'none';
 }
 
 // MODALS
