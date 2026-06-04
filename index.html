@@ -180,7 +180,7 @@
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         <input id="search" type="text" placeholder="Search friends or entries…" oninput="renderCards()">
       </div>
-      <button class="tb-btn tb-btn-outline" onclick="openCatModal()">
+      <button class="tb-btn tb-btn-outline" onclick="openCatModal()" id="manage-cats-btn" style="display:none">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
         <span>Manage categories</span>
       </button>
@@ -286,6 +286,9 @@ onAuthStateChanged(auth, user => {
   if(user) {
     document.getElementById('auth-btn').innerHTML = `<img src="${user.photoURL||''}" onerror="this.style.display='none'"> Sign out`;
     document.getElementById('auth-btn').onclick = window.signOut2;
+    if(user.email === 'brynnakelley12@gmail.com') {
+      document.getElementById('manage-cats-btn').style.display = 'flex';
+    }
     showView('home');
     startListening();
   } else {
@@ -298,7 +301,7 @@ onAuthStateChanged(auth, user => {
 
 function startListening() {
   unsubCats = onSnapshot(doc(db,'config','categories'), snap => {
-    categories = snap.exists() ? (snap.data().list||[]) : [];
+    categories = snap.exists() ? (snap.data().list||[]).slice().sort((a,b)=>a.localeCompare(b)) : [];
     renderCatManagerList();
     if(currentFriendId) { const f=friends.find(x=>x.id===currentFriendId); if(f) renderFriendPage(f); }
   });
@@ -413,8 +416,6 @@ window.renderCards = () => {
     const pills = filledCats.map(c=>`<span class="card-cat-pill" style="background:${DOTCOLORS[categories.indexOf(c)%DOTCOLORS.length]}">${c}</span>`).join('');
     return `<div class="friend-card" onclick="openFriendPage('${f.id}')">
       <div class="card-name">${f.name}</div>
-      <div class="card-meta">${f.note||'Friend'} · ${total} entries</div>
-      <div class="card-cats">${pills}</div>
     </div>`;
   }).join('');
 };
@@ -428,7 +429,8 @@ window.openFriendPage = (id) => {
 
 function renderFriendPage(f) {
   const user = auth.currentUser;
-  const isOwner = user && f.ownerUid === user.uid;
+  const isAdmin = user && user.email === 'brynnakelley12@gmail.com';
+  const isOwner = user && (f.ownerUid === user.uid || isAdmin);
   const unclaimed = !f.ownerUid;
 
   document.getElementById('fp-name').innerHTML = `<span class="rainbow-text">${f.name}</span>`;
