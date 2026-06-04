@@ -492,6 +492,13 @@ window.renderCards = () => {
         ${bday ? '<span style="font-size:20px">🎂</span>' : ''}
       </div>
       ${f.note ? `<div class="card-meta" style="margin-top:4px;text-align:left">${f.note}</div>` : ''}
+      ${q ? (() => {
+        const matches = [];
+        Object.entries(entries).forEach(([cat, arr]) => {
+          arr.forEach(e => { if(e.toLowerCase().includes(q)) matches.push(e); });
+        });
+        return matches.length ? `<div class="card-meta" style="margin-top:4px;font-style:italic;color:var(--text-muted)">"${matches.slice(0,2).join('", "')}"</div>` : '';
+      })() : ''}
     </div>`;
   }).join('');
 };
