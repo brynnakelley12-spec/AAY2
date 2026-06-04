@@ -500,7 +500,7 @@ window.renderCards = () => {
 window.openFriendPage = (id, searchTerm) => {
   currentFriendId = id;
   const f = friends.find(x=>x.id===id);
-  if(f) { renderFriendPage(f, searchTerm); showView('friend'); }
+  if(f) { renderFriendPage(f, searchTerm); showView('friend'); window.scrollTo({top:0, behavior:'smooth'}); }
 };
 
 function renderFriendPage(f, searchTerm) {
