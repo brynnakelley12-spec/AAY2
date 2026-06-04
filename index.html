@@ -414,20 +414,20 @@ window.renderCards = () => {
     const total = Object.values(entries).reduce((s,a)=>s+a.length,0);
     const filledCats = categories.filter(c=>(entries[c]||[]).length>0).slice(0,3);
     const pills = filledCats.map(c=>`<span class="card-cat-pill" style="background:${DOTCOLORS[categories.indexOf(c)%DOTCOLORS.length]}">${c}</span>`).join('');
-    return `<div class="friend-card" onclick="openFriendPage('${f.id}')">
+    return `<div class="friend-card" onclick="openFriendPage('${f.id}', ${JSON.stringify(q||'')})">
       <div class="card-name">${f.name}</div>
     </div>`;
   }).join('');
 };
 
 // FRIEND PAGE
-window.openFriendPage = (id) => {
+window.openFriendPage = (id, searchTerm) => {
   currentFriendId = id;
   const f = friends.find(x=>x.id===id);
-  if(f) { renderFriendPage(f); showView('friend'); }
+  if(f) { renderFriendPage(f, searchTerm); showView('friend'); }
 };
 
-function renderFriendPage(f) {
+function renderFriendPage(f, searchTerm) {
   const user = auth.currentUser;
   const isAdmin = user && user.email === 'brynnakelley12@gmail.com';
   const isOwner = user && (f.ownerUid === user.uid || isAdmin);
@@ -457,12 +457,17 @@ function renderFriendPage(f) {
     return;
   }
 
+  const matchCatIdx = searchTerm ? categories.findIndex((cat,ci) => (f.entries&&f.entries[cat]||[]).some(e=>e.toLowerCase().includes(searchTerm.toLowerCase()))) : -1;
+
   fp.innerHTML = categories.map((cat,ci) => {
     const inputId = `inp-${f.id}-${ci}`;
     const items = entries[cat]||[];
     const dotColor = DOTCOLORS[ci%DOTCOLORS.length];
     const removeBtns = isOwner;
-    const tags = items.map((e,i)=>`<span class="entry-tag">${e}${removeBtns?`<button onclick="removeEntry('${f.id}',${ci},${i})" aria-label="Remove">×</button>`:''}</span>`).join('');
+    const tags = items.map((e,i)=>{
+      const isMatch = searchTerm && e.toLowerCase().includes(searchTerm.toLowerCase());
+      return `<span class="entry-tag" ${isMatch?'style="border-color:var(--r);background:#fff8f0;font-weight:500"':''}>${e}${removeBtns?`<button onclick="removeEntry('${f.id}',${ci},${i})" aria-label="Remove">×</button>`:''}</span>`;
+    }).join('');
     const addRow = isOwner ? `<div class="add-entry">
         <input id="${inputId}" type="text" placeholder="Add…" onkeydown="if(event.key==='Enter')addEntry('${f.id}',${ci})">
         <button onclick="addEntry('${f.id}',${ci})"><span>Add</span></button>
