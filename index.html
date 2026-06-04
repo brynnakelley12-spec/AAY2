@@ -202,6 +202,7 @@
   <div class="friend-page">
     <div class="friend-page-header">
       <div id="fp-name" class="friend-page-name"></div>
+      <div id="fp-edit"></div>
       <div id="fp-claim" style="margin-top:0.75rem"></div>
     </div>
     <div id="fp-cats" class="cats-grid"></div>
@@ -430,6 +431,14 @@ window.deleteFriend = async (id) => {
   showToast('Friend removed.');
 };
 
+window.saveName = async (id) => {
+  const name = document.getElementById('edit-name').value.trim();
+  const note = document.getElementById('edit-note').value.trim();
+  if(!name) { showToast('Name cannot be empty.'); return; }
+  await updateDoc(doc(db,'friends',id), { name, note });
+  showToast('Updated!');
+};
+
 window.claimPage = async (id) => {
   const user = auth.currentUser;
   if(!user) return;
@@ -460,6 +469,7 @@ window.renderCards = () => {
     const pills = filledCats.map(c=>`<span class="card-cat-pill" style="background:${DOTCOLORS[categories.indexOf(c)%DOTCOLORS.length]}">${c}</span>`).join('');
     return `<div class="friend-card" onclick="openFriendPage('${f.id}', this.dataset.q)" data-q="${(q||'').replace(/"/g,'&quot;')}">
       <div class="card-name">${f.name}</div>
+      ${f.note ? `<div class="card-meta" style="margin-top:4px">${f.note}</div>` : ''}
     </div>`;
   }).join('');
 };
@@ -480,6 +490,18 @@ function renderFriendPage(f, searchTerm) {
 
   document.getElementById('fp-name').innerHTML = `<span class="rainbow-text">${f.name}</span>`;
   document.getElementById('fp-delete-btn').onclick = () => deleteFriend(f.id);
+
+  // Show edit name/note controls for owner
+  const editEl = document.getElementById('fp-edit');
+  if(isOwner) {
+    editEl.innerHTML = `<div style="display:flex;gap:8px;margin-top:0.75rem;flex-wrap:wrap">
+      <input id="edit-name" type="text" value="${f.name.replace(/"/g,'&quot;')}" placeholder="Name" style="padding:7px 12px;border-radius:100px;border:1px solid var(--border);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;flex:1;min-width:120px">
+      <input id="edit-note" type="text" value="${(f.note||'').replace(/"/g,'&quot;')}" placeholder="Note (optional)" style="padding:7px 12px;border-radius:100px;border:1px solid var(--border);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;flex:1;min-width:120px">
+      <button onclick="saveName('${f.id}')" style="padding:7px 16px;border-radius:100px;border:none;color:#000;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;position:relative;overflow:hidden;white-space:nowrap"><span style="position:relative;z-index:1">Save</span><span style="position:absolute;inset:0;background:linear-gradient(90deg,#E63946,#F4A261,#E9C46A,#E76F51,#A8282A,#C1440E,#F4D03F)"></span></button>
+    </div>`;
+  } else {
+    editEl.innerHTML = '';
+  }
 
   // Claim banner
   const claimEl = document.getElementById('fp-claim');
