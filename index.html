@@ -487,11 +487,11 @@ window.renderCards = () => {
     const pills = filledCats.map(c=>`<span class="card-cat-pill" style="background:${DOTCOLORS[categories.indexOf(c)%DOTCOLORS.length]}">${c}</span>`).join('');
     const bday = isBirthdayToday(entries);
     return `<div class="friend-card" onclick="openFriendPage('${f.id}', this.dataset.q)" data-q="${(q||'').replace(/"/g,'&quot;')}">
-      <div style="display:flex;align-items:center;gap:8px">
+      <div style="display:flex;align-items:center;justify-content:center;gap:8px;text-align:center">
         <div class="card-name" style="font-family:'Righteous',sans-serif;background:linear-gradient(90deg,#E63946,#F4A261,#E9C46A,#E76F51,#A8282A,#C1440E,#F4D03F);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${f.name}</div>
         ${bday ? '<span style="font-size:20px">🎂</span>' : ''}
       </div>
-      ${f.note ? `<div class="card-meta" style="margin-top:4px">${f.note}</div>` : ''}
+      ${f.note ? `<div class="card-meta" style="margin-top:4px;text-align:center">${f.note}</div>` : ''}
     </div>`;
   }).join('');
 };
