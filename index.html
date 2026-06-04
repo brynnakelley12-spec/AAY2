@@ -63,8 +63,8 @@
   .tb-btn-outline:hover { border-color: rgba(28,25,23,0.3); transform: none; }
 
   /* FRIEND GRID */
-  .friends-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 14px; }
-  .friend-card { background: var(--surface); border-radius: var(--radius); padding: 1.25rem; cursor: pointer; transition: box-shadow 0.15s, transform 0.1s; animation: fadeUp 0.3s ease forwards; position: relative; overflow: hidden; border: 1px solid var(--border); }
+  .friends-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px,1fr)); gap: 14px; }
+  .friend-card { background: var(--surface); border-radius: var(--radius); padding: 0.6rem 0.85rem; cursor: pointer; transition: box-shadow 0.15s, transform 0.1s; animation: fadeUp 0.3s ease forwards; position: relative; overflow: hidden; border: 1px solid var(--border); }
   .friend-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background: linear-gradient(90deg, var(--r), var(--o), var(--y), var(--g), var(--b), var(--i), var(--v)); }
   .friend-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.1); transform: translateY(-2px); }
   @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
@@ -487,11 +487,11 @@ window.renderCards = () => {
     const pills = filledCats.map(c=>`<span class="card-cat-pill" style="background:${DOTCOLORS[categories.indexOf(c)%DOTCOLORS.length]}">${c}</span>`).join('');
     const bday = isBirthdayToday(entries);
     return `<div class="friend-card" onclick="openFriendPage('${f.id}', this.dataset.q)" data-q="${(q||'').replace(/"/g,'&quot;')}">
-      <div style="display:flex;align-items:center;justify-content:center;gap:8px;text-align:center">
+      <div style="display:flex;align-items:center;justify-content:flex-start;gap:8px;text-align:left">
         <div class="card-name" style="font-family:'Righteous',sans-serif;background:linear-gradient(90deg,#E63946,#F4A261,#E9C46A,#E76F51,#A8282A,#C1440E,#F4D03F);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${f.name}</div>
         ${bday ? '<span style="font-size:20px">🎂</span>' : ''}
       </div>
-      ${f.note ? `<div class="card-meta" style="margin-top:4px;text-align:center">${f.note}</div>` : ''}
+      ${f.note ? `<div class="card-meta" style="margin-top:4px;text-align:left">${f.note}</div>` : ''}
     </div>`;
   }).join('');
 };
