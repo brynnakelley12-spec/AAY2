@@ -469,7 +469,7 @@ window.renderCards = () => {
     const filledCats = categories.filter(c=>(entries[c]||[]).length>0).slice(0,3);
     const pills = filledCats.map(c=>`<span class="card-cat-pill" style="background:${DOTCOLORS[categories.indexOf(c)%DOTCOLORS.length]}">${c}</span>`).join('');
     return `<div class="friend-card" onclick="openFriendPage('${f.id}', this.dataset.q)" data-q="${(q||'').replace(/"/g,'&quot;')}">
-      <div class="card-name">${f.name}</div>
+      <div class="card-name" style="font-family:'Righteous',sans-serif;background:linear-gradient(90deg,#E63946,#F4A261,#E9C46A,#E76F51,#A8282A,#C1440E,#F4D03F);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${f.name}</div>
       ${f.note ? `<div class="card-meta" style="margin-top:4px">${f.note}</div>` : ''}
     </div>`;
   }).join('');
