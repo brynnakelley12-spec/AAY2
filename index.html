@@ -702,7 +702,7 @@ function renderFriendPage(f, searchTerm) {
       return `<span class="entry-tag" ${isMatch?'style="border-color:var(--r);background:#fff8f0;font-weight:500"':''}>${e}${removeBtns?`<button onclick="removeEntry('${f.id}',${ci},${i})" aria-label="Remove">×</button>`:''}</span>`;
     }).join('');
     const addRow = isOwner ? `<div class="add-entry">
-        <input id="${inputId}" type="text" placeholder="Add…" onkeydown="if(event.key==='Enter')addEntry('${f.id}',${ci})">
+        <input id="${inputId}" type="text" placeholder="Add…" spellcheck="true" onkeydown="if(event.key==='Enter')addEntry('${f.id}',${ci})">
         <button onclick="addEntry('${f.id}',${ci})"><span>Add</span></button>
       </div>` : '';
     return `<div class="cat-section">
