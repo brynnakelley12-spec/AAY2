@@ -838,11 +838,20 @@ function renderBrowseCatList() {
   const list = document.getElementById('browse-cat-list');
   if(!categories.length) { list.innerHTML = '<p style="font-size:13px;color:var(--text-muted)">No categories yet.</p>'; return; }
   list.innerHTML = categories.map((c,i) => `
-    <button onclick="browseCategory(${i})" style="padding:7px 16px;border-radius:100px;border:1px solid var(--border);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;color:var(--text-soft);transition:border-color 0.15s" onmouseover="this.style.borderColor='rgba(28,25,23,0.3)'" onmouseout="this.style.borderColor='var(--border)'">${c}</button>
+    <button id="browse-cat-btn-${i}" onclick="browseCategory(${i})" style="padding:7px 16px;border-radius:100px;border:1px solid var(--border);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;color:var(--text-soft);transition:all 0.15s">${c}</button>
   `).join('');
 }
 
 window.browseCategory = (ci) => {
+  // Reset all buttons
+  categories.forEach((_,i) => {
+    const btn = document.getElementById(`browse-cat-btn-${i}`);
+    if(btn) { btn.style.background = 'var(--surface)'; btn.style.color = 'var(--text-soft)'; btn.style.borderColor = 'var(--border)'; btn.style.fontWeight = '400'; }
+  });
+  // Highlight selected
+  const selected = document.getElementById(`browse-cat-btn-${ci}`);
+  if(selected) { selected.style.background = 'linear-gradient(90deg,#E63946,#F4A261,#E9C46A,#E76F51,#A8282A,#C1440E,#F4D03F)'; selected.style.color = '#000'; selected.style.borderColor = 'transparent'; selected.style.fontWeight = '500'; }
+
   const cat = categories[ci];
   const dotColor = DOTCOLORS[ci % DOTCOLORS.length];
   const title = document.getElementById('browse-cat-title');
