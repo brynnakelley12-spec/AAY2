@@ -573,7 +573,8 @@ window.renderCards = () => {
     const filledCats = categories.filter(c=>(entries[c]||[]).length>0).slice(0,3);
     const pills = filledCats.map(c=>`<span class="card-cat-pill" style="background:${DOTCOLORS[categories.indexOf(c)%DOTCOLORS.length]}">${c}</span>`).join('');
     const bday = isBirthdayToday(entries);
-    return `<div class="friend-card" onclick="openFriendPage('${f.id}', this.dataset.q)" data-q="${(q||'').replace(/"/g,'&quot;')}">
+    const isMe = auth.currentUser && f.ownerUid === auth.currentUser.uid;
+    return `<div class="friend-card" onclick="openFriendPage('${f.id}', this.dataset.q)" data-q="${(q||'').replace(/"/g,'&quot;')}" style="${isMe ? 'border:2px solid transparent;background-image:linear-gradient(var(--surface),var(--surface)),linear-gradient(90deg,#E63946,#F4A261,#E9C46A,#E76F51,#A8282A,#C1440E,#F4D03F);background-origin:border-box;background-clip:padding-box,border-box;' : ''}">
       <div style="display:flex;align-items:center;justify-content:flex-start;gap:8px;text-align:left">
         <div class="card-name" style="font-family:'Righteous',sans-serif;background:linear-gradient(90deg,#E63946,#F4A261,#E9C46A,#E76F51,#A8282A,#C1440E,#F4D03F);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${f.name}</div>
         ${bday ? '<span style="font-size:20px">🎂</span>' : ''}
