@@ -539,6 +539,7 @@ window.claimPage = async (id) => {
 
 // RENDER HOME
 window.renderCards = () => {
+  const q = document.getElementById('search').value.toLowerCase();
   const grid = document.getElementById('friends-grid');
 
   // Search results view
@@ -582,7 +583,6 @@ window.renderCards = () => {
     }).join('');
     return;
   }
-  const q = document.getElementById('search').value.toLowerCase();
   const filtered = friends.filter(f => {
     if(!q) return true;
     if(f.name.toLowerCase().includes(q)) return true;
