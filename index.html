@@ -616,6 +616,10 @@ function renderFriendPage(f, searchTerm) {
     const items = entries[cat]||[];
     const dotColor = DOTCOLORS[ci%DOTCOLORS.length];
     const removeBtns = isOwner;
+
+    // Hide empty categories from non-owners
+    if(!isOwner && items.length === 0) return '';
+
     const tags = items.map((e,i)=>{
       const isMatch = searchTerm && e.toLowerCase().includes(searchTerm.toLowerCase());
       return `<span class="entry-tag" ${isMatch?'style="border-color:var(--r);background:#fff8f0;font-weight:500"':''}>${e}${removeBtns?`<button onclick="removeEntry('${f.id}',${ci},${i})" aria-label="Remove">×</button>`:''}</span>`;
