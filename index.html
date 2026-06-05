@@ -10,7 +10,7 @@
 <meta name="theme-color" content="#ffffff">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.png">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&family=Righteous&family=Nunito:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&family=Righteous&family=Nunito:wght@400;600&family=Uncial+Antiqua&display=swap" rel="stylesheet">
 <style>
   :root {
     --r: #E63946; --o: #F4A261; --y: #E9C46A; --g: #E76F51;
@@ -619,7 +619,7 @@ window.renderCards = () => {
     const isMe = auth.currentUser && f.ownerUid === auth.currentUser.uid;
     return `<div class="friend-card" onclick="openFriendPage('${f.id}', this.dataset.q)" data-q="${(q||'').replace(/"/g,'&quot;')}" style="${isMe ? 'border:2px solid transparent;background-image:linear-gradient(var(--surface),var(--surface)),linear-gradient(90deg,#E63946,#F4A261,#E9C46A,#E76F51,#A8282A,#C1440E,#F4D03F);background-origin:border-box;background-clip:padding-box,border-box;' : ''}">
       <div style="display:flex;align-items:center;justify-content:flex-start;gap:8px;text-align:left">
-        <div class="card-name" style="font-family:'Righteous',sans-serif;background:linear-gradient(90deg,#E63946,#F4A261,#E9C46A,#E76F51,#A8282A,#C1440E,#F4D03F);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${f.name}</div>
+        <div class="card-name" style="display:flex;align-items:baseline;gap:1px"><span style="font-family:'Uncial Antiqua',cursive;font-size:24px;background:linear-gradient(90deg,#E63946,#F4A261,#E9C46A,#E76F51,#A8282A,#C1440E,#F4D03F);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1">${f.name[0]}</span><span style="font-family:'Righteous',sans-serif;background:linear-gradient(90deg,#E63946,#F4A261,#E9C46A,#E76F51,#A8282A,#C1440E,#F4D03F);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${f.name.slice(1)}</span></div>
         ${bday ? '<span style="font-size:20px">🎂</span>' : ''}
       </div>
       ${f.note ? `<div class="card-meta" style="margin-top:4px;text-align:left">${f.note}</div>` : ''}
