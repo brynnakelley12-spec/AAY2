@@ -539,7 +539,49 @@ window.claimPage = async (id) => {
 
 // RENDER HOME
 window.renderCards = () => {
-  const q = document.getElementById('search').value.toLowerCase();
+  const grid = document.getElementById('friends-grid');
+
+  // Search results view
+  if(q) {
+    const results = [];
+    friends.forEach(f => {
+      const matchingCats = [];
+      categories.forEach((cat, ci) => {
+        const items = (f.entries && f.entries[cat]) || [];
+        const matches = items.filter(e => e.toLowerCase().includes(q));
+        if(matches.length > 0) matchingCats.push({ cat, ci, matches });
+      });
+      if(f.name.toLowerCase().includes(q) || matchingCats.length > 0) {
+        results.push({ f, matchingCats });
+      }
+    });
+
+    if(!results.length) {
+      grid.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><p>No matches found.</p></div>`;
+      return;
+    }
+
+    grid.innerHTML = results.sort((a,b)=>a.f.name.localeCompare(b.f.name)).map(({f, matchingCats}) => {
+      const catCards = matchingCats.map(({cat, ci, matches}) => {
+        const dotColor = DOTCOLORS[ci % DOTCOLORS.length];
+        const tags = matches.map(m => `<span style="font-size:12px;padding:4px 10px;border-radius:6px;border:1px solid ${dotColor};color:#000;background:${dotColor}20;font-family:'Nunito',sans-serif">${m}</span>`).join('');
+        return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:0.9rem 1rem;position:relative;overflow:hidden">
+          <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${dotColor}"></div>
+          <div style="font-size:10px;font-weight:500;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px">${cat}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:5px">${tags}</div>
+        </div>`;
+      }).join('');
+
+      return `<div style="grid-column:1/-1">
+        <div style="font-size:18px;font-weight:500;font-family:'Righteous',sans-serif;background:${name_gradient};-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;cursor:pointer" onclick="openFriendPage('${f.id}','${q.replace(/'/g,"\'")}')">
+          ${f.name} <span style="font-size:13px;-webkit-text-fill-color:var(--text-muted);color:var(--text-muted);font-family:'DM Sans',sans-serif;font-weight:400">→ view page</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:1.25rem">${catCards || `<div style="font-size:13px;color:var(--text-muted)">Name match</div>`}</div>
+        <div style="height:1px;background:var(--border);margin-bottom:1.25rem"></div>
+      </div>`;
+    }).join('');
+    return;
+  }
   const grid = document.getElementById('friends-grid');
   const filtered = friends.filter(f => {
     if(!q) return true;
