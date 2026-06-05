@@ -10,7 +10,7 @@
 <meta name="theme-color" content="#ffffff">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.png">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&family=Righteous&family=Nunito:wght@400;600&family=Uncial+Antiqua&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&family=Righteous&family=Nunito:wght@400;600&family=Cinzel:wght@700&display=swap" rel="stylesheet">
 <style>
   :root {
     --r: #E63946; --o: #F4A261; --y: #E9C46A; --g: #E76F51;
@@ -76,7 +76,7 @@
   /* FRIEND PAGE */
   .friend-page { max-width: 980px; margin: 0 auto; padding: 2rem; }
   .friend-page-header { margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
-  .friend-page-name { font-family: 'Righteous', sans-serif; font-size: clamp(48px,7vw,72px); font-weight: 400; letter-spacing: -1px; }
+  .friend-page-name { font-size: clamp(48px,7vw,72px); font-weight: 400; letter-spacing: 0; display:flex; align-items:baseline; gap:2px; }
   .friend-page-actions { display: flex; justify-content: flex-end; margin-top: 1rem; }
   .cats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 14px; }
   .cat-section { background: var(--surface); border-radius: var(--radius); padding: 1.25rem; border: 1px solid var(--border); position: relative; overflow: hidden; }
@@ -619,7 +619,7 @@ window.renderCards = () => {
     const isMe = auth.currentUser && f.ownerUid === auth.currentUser.uid;
     return `<div class="friend-card" onclick="openFriendPage('${f.id}', this.dataset.q)" data-q="${(q||'').replace(/"/g,'&quot;')}" style="${isMe ? 'border:2px solid transparent;background-image:linear-gradient(var(--surface),var(--surface)),linear-gradient(90deg,#E63946,#F4A261,#E9C46A,#E76F51,#A8282A,#C1440E,#F4D03F);background-origin:border-box;background-clip:padding-box,border-box;' : ''}">
       <div style="display:flex;align-items:center;justify-content:flex-start;gap:8px;text-align:left">
-        <div class="card-name" style="display:flex;align-items:baseline;gap:1px"><span style="font-family:'Uncial Antiqua',cursive;font-size:24px;background:linear-gradient(90deg,#E63946,#F4A261,#E9C46A,#E76F51,#A8282A,#C1440E,#F4D03F);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1">${f.name[0]}</span><span style="font-family:'Righteous',sans-serif;background:linear-gradient(90deg,#E63946,#F4A261,#E9C46A,#E76F51,#A8282A,#C1440E,#F4D03F);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${f.name.slice(1)}</span></div>
+        <div class="card-name" style="display:flex;align-items:baseline;gap:1px"><span style="font-family:'Cinzel',serif;font-size:24px;background:linear-gradient(90deg,#E63946,#F4A261,#E9C46A,#E76F51,#A8282A,#C1440E,#F4D03F);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1">${f.name[0]}</span><span style="font-family:'Righteous',sans-serif;background:linear-gradient(90deg,#E63946,#F4A261,#E9C46A,#E76F51,#A8282A,#C1440E,#F4D03F);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${f.name.slice(1)}</span></div>
         ${bday ? '<span style="font-size:20px">🎂</span>' : ''}
       </div>
       ${f.note ? `<div class="card-meta" style="margin-top:4px;text-align:left">${f.note}</div>` : ''}
@@ -648,7 +648,9 @@ function renderFriendPage(f, searchTerm) {
   const canDelete = isOwner || isAdmin;
   const unclaimed = !f.ownerUid;
 
-  document.getElementById('fp-name').innerHTML = `<span class="rainbow-text">${f.name}</span>`;
+  document.getElementById('fp-name').innerHTML = (f.name.length >= 2 && f.name[1] === f.name[1].toUpperCase() && f.name[1] !== f.name[1].toLowerCase()) ?
+    `<span style="font-family:'Cinzel',serif;background:linear-gradient(90deg,#E63946,#F4A261,#E9C46A,#E76F51,#A8282A,#C1440E,#F4D03F);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${f.name}</span>` :
+    `<span style="font-family:'Cinzel',serif;font-size:1.2em;background:linear-gradient(90deg,#E63946,#F4A261,#E9C46A,#E76F51,#A8282A,#C1440E,#F4D03F);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1">${f.name[0]}</span><span style="font-family:'Righteous',sans-serif;background:linear-gradient(90deg,#F4A261,#E9C46A,#E76F51,#A8282A,#C1440E,#F4D03F);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${f.name.slice(1)}</span>`;
   document.getElementById('fp-delete-btn').onclick = () => deleteFriend(f.id);
 
   // Show edit name/note controls for owner
