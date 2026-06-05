@@ -448,6 +448,12 @@ function startListening() {
     window._calEvents = snap.docs.map(d=>({id:d.id,...d.data()}));
     if(document.getElementById('cal-modal').classList.contains('open')) renderCalendar();
   });
+
+  onSnapshot(collection(db,'suggestions'), snap => {
+    console.log('Suggestions snapshot fired, count:', snap.docs.length);
+    const suggestions = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>b.createdAt-a.createdAt);
+    renderSuggestions(suggestions);
+  });
 }
 
 // CATEGORIES
