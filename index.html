@@ -582,7 +582,6 @@ window.renderCards = () => {
     }).join('');
     return;
   }
-  const grid = document.getElementById('friends-grid');
   const filtered = friends.filter(f => {
     if(!q) return true;
     if(f.name.toLowerCase().includes(q)) return true;
