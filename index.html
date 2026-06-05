@@ -919,7 +919,7 @@ window.submitSuggestion = async () => {
 function renderSuggestions(suggestions) {
   const list = document.getElementById('suggestions-list');
   if(!list) return;
-  if(!suggestions.length) { list.innerHTML = '<p style="font-size:13px;color:var(--text-muted)">No suggestions yet — be the first!</p>'; return; }
+  if(!suggestions.length) { list.innerHTML = '<p style="font-size:13px;color:#000;font-weight:500;position:absolute;top:12px;left:12px">No suggestions yet — be the first!</p>'; return; }
   const isAdmin = auth.currentUser && auth.currentUser.email === 'brynnakelley12@gmail.com';
   list.innerHTML = suggestions.map(s => `
     <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:8px 12px;background:rgba(255,255,255,0.12);border-radius:8px;border:1px solid rgba(255,255,255,0.2)">
