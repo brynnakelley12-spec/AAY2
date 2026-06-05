@@ -338,7 +338,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, doc, onSnapshot, addDoc, updateDoc, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, doc, onSnapshot, addDoc, updateDoc, deleteDoc, setDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBJdjIBAexSg4azwEYwtHSh2zVYK2i9MfQ",
@@ -449,13 +449,8 @@ function startListening() {
     if(document.getElementById('cal-modal').classList.contains('open')) renderCalendar();
   });
 
-  onSnapshot(collection(db,'suggestions'), snap => {
-    console.log('Suggestions snapshot fired, count:', snap.docs.length);
-    const suggestions = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>b.createdAt-a.createdAt);
-    renderSuggestions(suggestions);
-  }, err => {
-    console.error('Suggestions listener error:', err.code, err.message);
-  });
+  // Load suggestions once on start
+  loadSuggestions();
 }
 
 // CATEGORIES
@@ -913,6 +908,7 @@ window.submitSuggestion = async () => {
   });
   inp.value = '';
   showToast('Suggestion submitted!');
+  loadSuggestions();
 };
 
 function renderSuggestions(suggestions) {
@@ -932,7 +928,19 @@ function renderSuggestions(suggestions) {
 
 window.deleteSuggestion = async (id) => {
   await deleteDoc(doc(db,'suggestions',id));
+  loadSuggestions();
 };
+
+async function loadSuggestions() {
+  try {
+    const snap = await getDocs(collection(db,'suggestions'));
+    const suggestions = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>b.createdAt-a.createdAt);
+    console.log('Suggestions loaded:', suggestions.length);
+    renderSuggestions(suggestions);
+  } catch(err) {
+    console.error('Load suggestions error:', err.code, err.message);
+  }
+}
 
 function showToast(msg) {
   const t=document.getElementById('toast');
