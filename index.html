@@ -223,7 +223,7 @@
 
     <!-- SUGGESTION BOARD -->
     <div style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border)">
-      <p style="font-size:15px;font-weight:500;color:var(--text-primary);margin-bottom:4px">💡 Got an idea for a feature or category?</p>
+      <p style="font-size:15px;font-weight:500;color:var(--text);margin-bottom:4px">💡 Got an idea for a feature or category?</p>
       <p style="font-size:13px;color:var(--text-muted);margin-bottom:1rem">Submit your suggestion below — everyone can see them!</p>
       <div style="display:flex;gap:8px;margin-bottom:1.5rem">
         <input id="suggestion-input" type="text" placeholder="Type your idea here…" spellcheck="true" style="flex:1;padding:10px 14px;border-radius:100px;border:1px solid var(--border);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none" onkeydown="if(event.key==='Enter')submitSuggestion()">
@@ -232,7 +232,12 @@
           <span style="position:absolute;inset:0;background:linear-gradient(90deg,#E63946,#F4A261,#E9C46A,#E76F51,#A8282A,#C1440E,#F4D03F)"></span>
         </button>
       </div>
-      <div id="suggestions-list" style="display:flex;flex-direction:column;gap:8px"></div>
+      <div style="position:relative;border-radius:16px;overflow:hidden;background:#000;max-width:500px">
+        <img src="https://github.com/brynnakelley12-spec/AllAboutYou/blob/main/SBox1.png?raw=true" alt="suggestion box" style="width:100%;display:block;opacity:0.75;object-fit:contain">
+        <div style="position:absolute;inset:0;padding:1.25rem;overflow-y:auto;display:flex;flex-direction:column;justify-content:center">
+          <div id="suggestions-list" style="display:flex;flex-direction:column;gap:6px"></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -917,12 +922,12 @@ function renderSuggestions(suggestions) {
   if(!suggestions.length) { list.innerHTML = '<p style="font-size:13px;color:var(--text-muted)">No suggestions yet — be the first!</p>'; return; }
   const isAdmin = auth.currentUser && auth.currentUser.email === 'brynnakelley12@gmail.com';
   list.innerHTML = suggestions.map(s => `
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:10px 14px;background:var(--surface);border-radius:10px;border:1px solid var(--border)">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:8px 12px;background:rgba(255,255,255,0.12);border-radius:8px;border:1px solid rgba(255,255,255,0.2)">
       <div>
-        <div style="font-size:14px;color:var(--text)">${s.text}</div>
-        <div style="font-size:11px;color:var(--text-muted);margin-top:3px">${s.authorName}</div>
+        <div style="font-size:13px;color:#fff">${s.text}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:2px">${s.authorName}</div>
       </div>
-      ${isAdmin ? `<button onclick="deleteSuggestion('${s.id}')" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:16px;padding:0 4px;flex-shrink:0">×</button>` : ''}
+      ${isAdmin ? `<button onclick="deleteSuggestion('${s.id}')" style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.5);font-size:16px;padding:0 4px;flex-shrink:0">×</button>` : ''}
     </div>`).join('');
 }
 
