@@ -201,6 +201,10 @@
         <input id="search" type="text" placeholder="Search friends or entries…" oninput="renderCards();document.getElementById('search-clear').style.display=this.value?'block':'none'">
         <button id="search-clear" onclick="document.getElementById('search').value='';renderCards();this.style.display='none'" style="display:none;background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:18px;line-height:1;padding:0 2px;flex-shrink:0">×</button>
       </div>
+      <button class="tb-btn tb-btn-outline" onclick="openBrowseModal()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
+        <span>Browse by category</span>
+      </button>
       <button class="tb-btn tb-btn-outline" onclick="openCatModal()" id="manage-cats-btn" style="display:none">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
         <span>Manage categories</span>
@@ -264,6 +268,23 @@
     </div>
     <div class="modal-actions" style="margin-top:0">
       <button class="btn-primary" onclick="closeCalendar()"><span>Close</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- BROWSE BY CATEGORY MODAL -->
+<div class="modal-overlay" id="browse-modal">
+  <div class="modal" style="max-width:560px">
+    <h2>Browse by category</h2>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:1rem;line-height:1.6">Pick a category to see everyone's entries.</p>
+    <div id="browse-cat-list" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1.25rem"></div>
+    <div id="browse-results" style="display:none">
+      <div style="height:1px;background:var(--border);margin-bottom:1.25rem"></div>
+      <p id="browse-cat-title" style="font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px"></p>
+      <div id="browse-results-list" style="display:flex;flex-direction:column;gap:10px;max-height:340px;overflow-y:auto"></div>
+    </div>
+    <div class="modal-actions" style="margin-top:1.25rem">
+      <button class="btn-primary" onclick="closeBrowseModal()"><span>Close</span></button>
     </div>
   </div>
 </div>
@@ -805,6 +826,48 @@ window.deleteEvent = async (id) => {
   await deleteDoc(doc(db,'events',id));
   showToast('Event removed.');
 };
+
+window.openBrowseModal = () => {
+  document.getElementById('browse-modal').classList.add('open');
+  document.getElementById('browse-results').style.display = 'none';
+  renderBrowseCatList();
+};
+window.closeBrowseModal = () => { document.getElementById('browse-modal').classList.remove('open'); };
+
+function renderBrowseCatList() {
+  const list = document.getElementById('browse-cat-list');
+  if(!categories.length) { list.innerHTML = '<p style="font-size:13px;color:var(--text-muted)">No categories yet.</p>'; return; }
+  list.innerHTML = categories.map((c,i) => `
+    <button onclick="browseCategory(${i})" style="padding:7px 16px;border-radius:100px;border:1px solid var(--border);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;color:var(--text-soft);transition:border-color 0.15s" onmouseover="this.style.borderColor='rgba(28,25,23,0.3)'" onmouseout="this.style.borderColor='var(--border)'">${c}</button>
+  `).join('');
+}
+
+window.browseCategory = (ci) => {
+  const cat = categories[ci];
+  const dotColor = DOTCOLORS[ci % DOTCOLORS.length];
+  const title = document.getElementById('browse-cat-title');
+  title.textContent = cat;
+  title.style.color = dotColor;
+
+  const results = friends
+    .map(f => ({ f, items: (f.entries && f.entries[cat]) || [] }))
+    .filter(({items}) => items.length > 0)
+    .sort((a,b) => a.f.name.localeCompare(b.f.name));
+
+  const list = document.getElementById('browse-results-list');
+  if(!results.length) {
+    list.innerHTML = '<p style="font-size:13px;color:var(--text-muted)">Nobody has filled this in yet.</p>';
+  } else {
+    list.innerHTML = results.map(({f, items}) => `
+      <div style="display:flex;align-items:flex-start;gap:12px;padding:10px 14px;background:var(--surface);border-radius:10px;border:1px solid var(--border);cursor:pointer" onclick="closeBrowseModal();openFriendPage('${f.id}')">
+        <div style="font-size:14px;font-weight:500;min-width:100px;font-family:'Cinzel',serif;background:linear-gradient(90deg,#E63946,#F4A261,#E9C46A,#E76F51,#A8282A,#C1440E,#F4D03F);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${f.name}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px">${items.map(e=>`<span style="font-size:12px;padding:3px 10px;border-radius:6px;border:1px solid var(--border);color:var(--text-soft);background:var(--bg);font-family:'Nunito',sans-serif">${e}</span>`).join('')}</div>
+      </div>`).join('');
+  }
+  document.getElementById('browse-results').style.display = 'block';
+};
+
+document.getElementById('browse-modal').addEventListener('click', e => { if(e.target===document.getElementById('browse-modal')) closeBrowseModal(); });
 
 function showToast(msg) {
   const t=document.getElementById('toast');
