@@ -219,6 +219,20 @@
       </button>
     </div>
     <div id="friends-grid" class="friends-grid"><div class="loading">Loading…</div></div>
+
+    <!-- SUGGESTION BOARD -->
+    <div style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border)">
+      <p style="font-size:15px;font-weight:500;color:var(--text-primary);margin-bottom:4px">💡 Got an idea for a feature or category?</p>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:1rem">Submit your suggestion below — everyone can see them!</p>
+      <div style="display:flex;gap:8px;margin-bottom:1.5rem">
+        <input id="suggestion-input" type="text" placeholder="Type your idea here…" spellcheck="true" style="flex:1;padding:10px 14px;border-radius:100px;border:1px solid var(--border);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none" onkeydown="if(event.key==='Enter')submitSuggestion()">
+        <button onclick="submitSuggestion()" style="padding:10px 20px;border-radius:100px;border:none;color:#000;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;position:relative;overflow:hidden;white-space:nowrap">
+          <span style="position:relative;z-index:1">Submit</span>
+          <span style="position:absolute;inset:0;background:linear-gradient(90deg,#E63946,#F4A261,#E9C46A,#E76F51,#A8282A,#C1440E,#F4D03F)"></span>
+        </button>
+      </div>
+      <div id="suggestions-list" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
   </div>
 </div>
 
@@ -542,9 +556,8 @@ window.deleteFriend = async (id) => {
 
 window.saveName = async (id) => {
   const name = document.getElementById('edit-name').value.trim();
-  const note = document.getElementById('edit-note').value.trim();
   if(!name) { showToast('Name cannot be empty.'); return; }
-  await updateDoc(doc(db,'friends',id), { name, note });
+  await updateDoc(doc(db,'friends',id), { name });
   showToast('Updated!');
 };
 
@@ -679,7 +692,7 @@ function renderFriendPage(f, searchTerm) {
   if(isOwner) {
     editEl.innerHTML = `<div style="display:flex;gap:8px;margin-top:0.75rem;flex-wrap:wrap">
       <input id="edit-name" type="text" value="${f.name.replace(/"/g,'&quot;')}" placeholder="Name" style="padding:7px 12px;border-radius:100px;border:1px solid var(--border);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;flex:1;min-width:120px">
-      <input id="edit-note" type="text" value="${(f.note||'').replace(/"/g,'&quot;')}" placeholder="Note (optional)" style="padding:7px 12px;border-radius:100px;border:1px solid var(--border);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;flex:1;min-width:120px">
+
       <button onclick="saveName('${f.id}')" style="padding:7px 16px;border-radius:100px;border:none;color:#000;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;position:relative;overflow:hidden;white-space:nowrap"><span style="position:relative;z-index:1">Save</span><span style="position:absolute;inset:0;background:linear-gradient(90deg,#E63946,#F4A261,#E9C46A,#E76F51,#A8282A,#C1440E,#F4D03F)"></span></button>
     </div>`;
   } else {
@@ -877,6 +890,40 @@ window.browseCategory = (ci) => {
 };
 
 document.getElementById('browse-modal').addEventListener('click', e => { if(e.target===document.getElementById('browse-modal')) closeBrowseModal(); });
+
+window.submitSuggestion = async () => {
+  const inp = document.getElementById('suggestion-input');
+  const text = inp.value.trim();
+  if(!text) return;
+  const user = auth.currentUser;
+  if(!user) return;
+  await addDoc(collection(db,'suggestions'), {
+    text,
+    authorName: user.displayName || user.email.split('@')[0],
+    createdAt: Date.now()
+  });
+  inp.value = '';
+  showToast('Suggestion submitted!');
+};
+
+function renderSuggestions(suggestions) {
+  const list = document.getElementById('suggestions-list');
+  if(!list) return;
+  if(!suggestions.length) { list.innerHTML = '<p style="font-size:13px;color:var(--text-muted)">No suggestions yet — be the first!</p>'; return; }
+  const isAdmin = auth.currentUser && auth.currentUser.email === 'brynnakelley12@gmail.com';
+  list.innerHTML = suggestions.map(s => `
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:10px 14px;background:var(--surface);border-radius:10px;border:1px solid var(--border)">
+      <div>
+        <div style="font-size:14px;color:var(--text)">${s.text}</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:3px">${s.authorName}</div>
+      </div>
+      ${isAdmin ? `<button onclick="deleteSuggestion('${s.id}')" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:16px;padding:0 4px;flex-shrink:0">×</button>` : ''}
+    </div>`).join('');
+}
+
+window.deleteSuggestion = async (id) => {
+  await deleteDoc(doc(db,'suggestions',id));
+};
 
 function showToast(msg) {
   const t=document.getElementById('toast');
