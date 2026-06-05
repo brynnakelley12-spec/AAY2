@@ -435,13 +435,44 @@ function renderCatManagerList() {
   const list = document.getElementById('cat-manager-list');
   if(!categories.length) { list.innerHTML='<div class="empty-cats">No categories yet!</div>'; return; }
   list.innerHTML = categories.map((c,i)=>`
-    <div class="cat-manager-item">
-      <span style="display:flex;align-items:center;gap:8px">
-        <span style="width:10px;height:10px;border-radius:50%;flex-shrink:0;background:${DOTCOLORS[i%DOTCOLORS.length]}"></span>${c}
+    <div class="cat-manager-item" id="cat-item-${i}">
+      <span style="display:flex;align-items:center;gap:8px;flex:1">
+        <span style="width:10px;height:10px;border-radius:50%;flex-shrink:0;background:${DOTCOLORS[i%DOTCOLORS.length]}"></span>
+        <span id="cat-label-${i}">${c}</span>
+        <input id="cat-edit-${i}" type="text" value="${c}" style="display:none;flex:1;padding:4px 10px;border-radius:100px;border:1px solid var(--border);background:var(--surface2);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none" onkeydown="if(event.key==='Enter')saveCategoryEdit(${i})">
       </span>
-      <button onclick="removeCategory(${i})" aria-label="Remove">×</button>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button id="cat-edit-btn-${i}" onclick="startCategoryEdit(${i})" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:15px;padding:0 4px">✏️</button>
+        <button id="cat-save-btn-${i}" onclick="saveCategoryEdit(${i})" style="display:none;background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:13px;padding:0 4px;font-family:'DM Sans',sans-serif">Save</button>
+        <button onclick="removeCategory(${i})" aria-label="Remove">×</button>
+      </div>
     </div>`).join('');
 }
+
+window.startCategoryEdit = (i) => {
+  document.getElementById(`cat-label-${i}`).style.display = 'none';
+  document.getElementById(`cat-edit-${i}`).style.display = 'block';
+  document.getElementById(`cat-edit-btn-${i}`).style.display = 'none';
+  document.getElementById(`cat-save-btn-${i}`).style.display = 'block';
+  document.getElementById(`cat-edit-${i}`).focus();
+};
+
+window.saveCategoryEdit = async (i) => {
+  const newName = document.getElementById(`cat-edit-${i}`).value.trim();
+  if(!newName) { showToast('Category name cannot be empty.'); return; }
+  if(categories.includes(newName) && newName !== categories[i]) { showToast('Category already exists.'); return; }
+  const oldName = categories[i];
+  categories[i] = newName;
+  await saveCategories();
+  const updates = friends.filter(f => f.entries && f.entries[oldName]);
+  for(const f of updates) {
+    const entries = {...f.entries};
+    entries[newName] = entries[oldName];
+    delete entries[oldName];
+    await updateDoc(doc(db,'friends',f.id), { entries });
+  }
+  showToast(`Renamed to "${newName}"!`);
+};
 
 // FRIENDS
 window.addFriend = async () => {
