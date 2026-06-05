@@ -575,7 +575,7 @@ window.renderCards = () => {
       }).join('');
 
       return `<div style="grid-column:1/-1">
-        <div style="font-size:18px;font-weight:500;font-family:'Righteous',sans-serif;background:${name_gradient};-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;cursor:pointer" onclick="openFriendPage('${f.id}','${q.replace(/'/g,"\'")}')">
+        <div style="font-size:18px;font-weight:500;font-family:'Righteous',sans-serif;background:linear-gradient(90deg,#E63946,#F4A261,#E9C46A,#E76F51,#A8282A,#C1440E,#F4D03F);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;cursor:pointer" onclick="openFriendPage('${f.id}','${q.replace(/'/g,"\'")}')">
           ${f.name} <span style="font-size:13px;-webkit-text-fill-color:var(--text-muted);color:var(--text-muted);font-family:'DM Sans',sans-serif;font-weight:400">→ view page</span>
         </div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:1.25rem">${catCards || `<div style="font-size:13px;color:var(--text-muted)">Name match</div>`}</div>
